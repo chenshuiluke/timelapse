@@ -8,19 +8,21 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import io.realm.Realm;
 
-public class MainActivity extends AppCompatActivity {
+
+public class TimerActivity extends AppCompatActivity {
     CounterTask task = new CounterTask();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.timer_layout);
     }
 
     public void toggleTimer(View view){
         Button button = (Button)findViewById(R.id.timerButton);
         if(task.getStatus() == AsyncTask.Status.RUNNING){
-            task.cancel(false);
+            task.setFinished();
             task = new CounterTask();
             button.setText("Start");
             System.out.println("Stopping counter!");
@@ -33,17 +35,24 @@ public class MainActivity extends AppCompatActivity {
         System.out.println(task.getStatus());
     }
 
+    void saveAction(Action action){
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.copyToRealm(action);
+        realm.commitTransaction();
+        System.out.println(action.duration.getSeconds());
+    }
+
     private class CounterTask extends AsyncTask {
+        private Action action;
+        private boolean finished = false;
+        public void setFinished(){
+            finished = true;
+        }
         @Override
         protected Object doInBackground(Object[] params) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ProgressBar progressBar = (ProgressBar) findViewById(R.id.counterProgressBar);
-                    progressBar.setVisibility(View.VISIBLE);
-                }
-            });
-            for(int counter = 0; !isCancelled(); counter++){
+            action = new Action("TEMP");
+            for(int counter = 0; !finished; counter++){
                 try{
                     publishProgress(counter);
                     Thread.sleep(1000);
@@ -52,20 +61,23 @@ public class MainActivity extends AppCompatActivity {
                     exc.printStackTrace();
                 }
             }
-            return null;
+            System.out.println("Done!");
+            action.calculateDuration();
+            return action;
         }
 
         @Override
         protected void onProgressUpdate(Object[] values) {
             TextView counterView = (TextView)findViewById(R.id.counterTextView);
-            counterView.setText(String.valueOf(values[0]));
+            action.incrementByOneSecond();
+            counterView.setText(action.getDifferenceInSeconds());
             System.out.println(values[0]);
         }
 
         @Override
-        protected void onCancelled(Object o) {
-            ProgressBar progressBar = (ProgressBar) findViewById(R.id.counterProgressBar);
-            progressBar.setVisibility(View.INVISIBLE);
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            saveAction((Action)o);
         }
     }
 
