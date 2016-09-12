@@ -7,7 +7,7 @@
 /build
 /captures
 # Created by https://www.gitignore.io/api/android,java
-
+!timelapse/timelapse-relase.apk
 !app/build/generated/outputs/apk/*
 ### Android ###
 # Built application files

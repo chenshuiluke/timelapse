@@ -1,10 +1,11 @@
 package com.lukechenshui.timelapse;
 
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         else{
             button.setText("Stop");
             System.out.println("Starting counter!");
+            task.execute();
         }
         System.out.println(task.getStatus());
     }
@@ -34,6 +36,13 @@ public class MainActivity extends AppCompatActivity {
     private class CounterTask extends AsyncTask {
         @Override
         protected Object doInBackground(Object[] params) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ProgressBar progressBar = (ProgressBar) findViewById(R.id.counterProgressBar);
+                    progressBar.setVisibility(View.VISIBLE);
+                }
+            });
             for(int counter = 0; !isCancelled(); counter++){
                 try{
                     publishProgress(counter);
@@ -51,6 +60,12 @@ public class MainActivity extends AppCompatActivity {
             TextView counterView = (TextView)findViewById(R.id.counterTextView);
             counterView.setText(String.valueOf(values[0]));
             System.out.println(values[0]);
+        }
+
+        @Override
+        protected void onCancelled(Object o) {
+            ProgressBar progressBar = (ProgressBar) findViewById(R.id.counterProgressBar);
+            progressBar.setVisibility(View.INVISIBLE);
         }
     }
 
