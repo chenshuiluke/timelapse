@@ -15,18 +15,15 @@ import java.util.GregorianCalendar;
 
 import javax.xml.datatype.Duration;
 
-import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
-
 /**
  * Created by luke on 9/12/16.
  */
-public class Action extends RealmObject{
-    @Ignore
+public class Action{
+    
     DateTime startTime;
-    @Ignore
+    
     DateTime endTime;
-    @Ignore
+    
     Seconds duration;
 
     String name;

@@ -1,5 +1,7 @@
 package com.lukechenshui.timelapse;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,8 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import io.realm.Realm;
 
 
 public class TimerActivity extends AppCompatActivity {
@@ -33,14 +33,6 @@ public class TimerActivity extends AppCompatActivity {
             task.execute();
         }
         System.out.println(task.getStatus());
-    }
-
-    void saveAction(Action action){
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.copyToRealm(action);
-        realm.commitTransaction();
-        System.out.println(action.duration.getSeconds());
     }
 
     private class CounterTask extends AsyncTask {
@@ -77,7 +69,16 @@ public class TimerActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
-            saveAction((Action)o);
+            System.out.println(action.duration.getSeconds());
+            ActionDatabaseHelper dbHelper = new ActionDatabaseHelper(getApplicationContext());
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            values.put(ActionReaderContract.ActionEntry.COLUMN_NAME_START_DATE, action.getStartTime());
+            values.put(ActionReaderContract.ActionEntry.COLUMN_NAME_END_DATE, action.getEndTime());
+            values.put(ActionReaderContract.ActionEntry.COLUMN_NAME_DURATION, action.getDuration());
+
+            db.insert(ActionReaderContract.ActionEntry.TABLE_NAME, null, values);
         }
     }
 
