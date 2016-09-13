@@ -7,12 +7,16 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 
 
 public class TimerActivity extends AppCompatActivity {
     CounterTask task = new CounterTask();
+    ArrayList<Action> actions = new ArrayList<>();
+    HashSet<String> actionNames = new HashSet<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,9 +81,17 @@ public class TimerActivity extends AppCompatActivity {
             values.put(ActionReaderContract.ActionEntry.COLUMN_NAME_START_DATE, action.getStartTime());
             values.put(ActionReaderContract.ActionEntry.COLUMN_NAME_END_DATE, action.getEndTime());
             values.put(ActionReaderContract.ActionEntry.COLUMN_NAME_DURATION, action.getDuration());
+            values.put(ActionReaderContract.ActionEntry.COLUMN_NAME_NAME, action.getName());
 
             db.insert(ActionReaderContract.ActionEntry.TABLE_NAME, null, values);
+            actions = dbHelper.getAllRecords(getApplicationContext());
+
+            for (Action action : actions) {
+                actionNames.add(action.getName());
+            }
         }
+
+
     }
 
 }
