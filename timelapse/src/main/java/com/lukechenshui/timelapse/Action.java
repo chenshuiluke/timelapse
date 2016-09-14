@@ -57,7 +57,7 @@ public class Action implements Parcelable {
     }
 
     public String getFormattedDate(DateTime date) {
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy-H:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy");
         return formatter.print(date);
     }
 
@@ -67,6 +67,19 @@ public class Action implements Parcelable {
 
     public String getFormattedEndDate() {
         return getFormattedDate(endTime);
+    }
+
+    public String getFullyFormattedDate(DateTime date) {
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy-H:mm:ss");
+        return formatter.print(date);
+    }
+
+    public String getFullyFormattedStartDate() {
+        return getFullyFormattedDate(startTime);
+    }
+
+    public String getFullyFormattedEndDate() {
+        return getFullyFormattedDate(endTime);
     }
 
     public String getFormattedDifference() {

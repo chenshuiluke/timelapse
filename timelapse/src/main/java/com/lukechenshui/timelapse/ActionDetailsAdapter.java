@@ -46,7 +46,7 @@ public class ActionDetailsAdapter extends BaseAdapter {
         TextView durationTextView = (TextView) newView.findViewById(R.id.durationTextView);
         Action action = getItem(position);
         System.out.println("Start date:" + action.getFormattedStartDate());
-        actionStartDate.setText(action.getFormattedStartDate());
+        actionStartDate.setText(action.getFullyFormattedStartDate());
         durationTextView.setText(action.getFormattedDifference());
         return newView;
     }

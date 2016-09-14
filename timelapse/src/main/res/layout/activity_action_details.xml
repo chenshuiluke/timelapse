@@ -10,13 +10,28 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.lukechenshui.timelapse.ActionDetailsActivity">
 
-    <Button
-        android:id="@+id/startPerformingAction"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:onClick="startAction"
-        android:text="Start Action" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/startPerformingAction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:onClick="startAction"
+            android:text="Start Action" />
+
+        <Button
+            android:id="@+id/viewChartButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="showChartActivity"
+            android:text="VIew Chart" />
+    </LinearLayout>
 
     <ListView
         android:id="@+id/actionDetailsListView"

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class ActionDetailsActivity extends AppCompatActivity {
     String actionName;
-
+    ArrayList<Action> actions;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,18 +28,22 @@ public class ActionDetailsActivity extends AppCompatActivity {
 
     public void populateListView() {
         ActionDatabaseHelper dbHelper = new ActionDatabaseHelper(getApplicationContext());
-        final ArrayList<Action> actions = dbHelper.getAllRecordsWhereNameEquals(getApplicationContext(), actionName);
+        final ArrayList<Action> tempActionsList = dbHelper.getAllRecordsWhereNameEquals(getApplicationContext(), actionName);
 
-        System.out.println("Action details: " + actions);
+
+        System.out.println("Action details: " + tempActionsList);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 ListView list = (ListView) findViewById(R.id.actionDetailsListView);
+
+
                 list.setAdapter(new ActionDetailsAdapter(getApplicationContext(), new ArrayList<Action>()));
-                ActionDetailsAdapter adapter = new ActionDetailsAdapter(getApplicationContext(), actions);
+                ActionDetailsAdapter adapter = new ActionDetailsAdapter(getApplicationContext(), tempActionsList);
                 list.setAdapter(adapter);
             }
         });
+        actions = tempActionsList;
     }
 
     public void startAction(View view) {
@@ -52,6 +56,12 @@ public class ActionDetailsActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         PopulateListViewTask task = new PopulateListViewTask();
         task.execute();
+    }
+
+    public void showChartActivity(View view) {
+        Intent intent = new Intent(this, ActionChartActivity.class);
+        intent.putExtra("actions", actions);
+        startActivity(intent);
     }
 
     public class PopulateListViewTask extends AsyncTask {
