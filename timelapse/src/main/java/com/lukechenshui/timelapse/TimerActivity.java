@@ -7,20 +7,19 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Switch;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.HashSet;
 
 
 public class TimerActivity extends AppCompatActivity {
     CounterTask task = new CounterTask();
-    ArrayList<Action> actions = new ArrayList<>();
-    HashSet<String> actionNames = new HashSet<>();
+    private Switch saveSwitch;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.timer_layout);
+        saveSwitch = (Switch) findViewById(R.id.saveActionCheckBox);
+
     }
 
     public void toggleTimer(View view){
@@ -30,13 +29,22 @@ public class TimerActivity extends AppCompatActivity {
             task = new CounterTask();
             button.setText("Start");
             System.out.println("Stopping counter!");
+            saveSwitch.setEnabled(true);
         }
         else{
             button.setText("Stop");
             System.out.println("Starting counter!");
             task.execute();
+            saveSwitch.setEnabled(false);
         }
         System.out.println(task.getStatus());
+    }
+
+    public void back(View view) {
+        if (!task.isCancelled()) {
+            task.cancel(true);
+        }
+        finish();
     }
 
     private class CounterTask extends AsyncTask {
@@ -47,15 +55,16 @@ public class TimerActivity extends AppCompatActivity {
         }
         @Override
         protected Object doInBackground(Object[] params) {
-            action = new Action("TEMP");
-            for(int counter = 0; !finished; counter++){
-                try{
+            action = new Action(getIntent().getStringExtra("actionName"));
+
+            try {
+                for (int counter = 0; !finished; counter++) {
+
                     publishProgress(counter);
                     Thread.sleep(1000);
                 }
-                catch(InterruptedException exc){
-                    exc.printStackTrace();
-                }
+            } catch (InterruptedException exc) {
+                exc.printStackTrace();
             }
             System.out.println("Done!");
             action.calculateDuration();
@@ -66,32 +75,29 @@ public class TimerActivity extends AppCompatActivity {
         protected void onProgressUpdate(Object[] values) {
             TextView counterView = (TextView)findViewById(R.id.counterTextView);
             action.incrementByOneSecond();
-            counterView.setText(action.getDifferenceInSeconds());
+            counterView.setText(action.getFormattedDifference());
             System.out.println(values[0]);
         }
 
         @Override
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
+
             System.out.println(action.duration.getSeconds());
-            ActionDatabaseHelper dbHelper = new ActionDatabaseHelper(getApplicationContext());
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            if (saveSwitch.isChecked()) {
+                ActionDatabaseHelper dbHelper = new ActionDatabaseHelper(getApplicationContext());
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-            ContentValues values = new ContentValues();
-            values.put(ActionReaderContract.ActionEntry.COLUMN_NAME_START_DATE, action.getStartTime());
-            values.put(ActionReaderContract.ActionEntry.COLUMN_NAME_END_DATE, action.getEndTime());
-            values.put(ActionReaderContract.ActionEntry.COLUMN_NAME_DURATION, action.getDuration());
-            values.put(ActionReaderContract.ActionEntry.COLUMN_NAME_NAME, action.getName());
+                ContentValues values = new ContentValues();
+                values.put(ActionReaderContract.ActionEntry.COLUMN_NAME_START_DATE, action.getStartTime());
+                values.put(ActionReaderContract.ActionEntry.COLUMN_NAME_END_DATE, action.getEndTime());
+                values.put(ActionReaderContract.ActionEntry.COLUMN_NAME_DURATION, action.getDuration());
+                values.put(ActionReaderContract.ActionEntry.COLUMN_NAME_NAME, action.getName());
 
-            db.insert(ActionReaderContract.ActionEntry.TABLE_NAME, null, values);
-            actions = dbHelper.getAllRecords(getApplicationContext());
-
-            for (Action action : actions) {
-                actionNames.add(action.getName());
+                db.insert(ActionReaderContract.ActionEntry.TABLE_NAME, null, values);
             }
         }
 
 
     }
-
 }

@@ -41,8 +41,9 @@ public class ActionDatabaseHelper extends SQLiteOpenHelper {
                 ActionReaderContract.ActionEntry.COLUMN_NAME_DURATION
         };
         String selection = ActionReaderContract.ActionEntry.COLUMN_NAME_NAME;
+        String sortOrder = " ORDER BY " + ActionReaderContract.ActionEntry.COLUMN_NAME_START_DATE + " DESC";
         String[] selectionArgs = {"*"};
-        Cursor cursor = db.rawQuery("SELECT * FROM " + ActionReaderContract.ActionEntry.TABLE_NAME, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ActionReaderContract.ActionEntry.TABLE_NAME + sortOrder, null);
         return cursor;
     }
 
@@ -56,6 +57,23 @@ public class ActionDatabaseHelper extends SQLiteOpenHelper {
             tempAction.setEndTime(cursor.getLong(cursor.getColumnIndexOrThrow(ActionReaderContract.ActionEntry.COLUMN_NAME_END_DATE)));
             tempAction.setDuration(cursor.getInt(cursor.getColumnIndexOrThrow(ActionReaderContract.ActionEntry.COLUMN_NAME_DURATION)));
             actions.add(tempAction);
+        }
+        return actions;
+    }
+
+    public ArrayList<Action> getAllRecordsWhereNameEquals(Context context, String name) {
+        Cursor cursor = getCursor(context);
+        ArrayList<Action> actions = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            Action tempAction = new Action();
+            tempAction.setName(cursor.getString(cursor.getColumnIndexOrThrow(ActionReaderContract.ActionEntry.COLUMN_NAME_NAME)));
+            tempAction.setStartTime(cursor.getLong(cursor.getColumnIndexOrThrow(ActionReaderContract.ActionEntry.COLUMN_NAME_START_DATE)));
+            tempAction.setEndTime(cursor.getLong(cursor.getColumnIndexOrThrow(ActionReaderContract.ActionEntry.COLUMN_NAME_END_DATE)));
+            tempAction.setDuration(cursor.getInt(cursor.getColumnIndexOrThrow(ActionReaderContract.ActionEntry.COLUMN_NAME_DURATION)));
+            if (tempAction.getName() != null && tempAction.getName().equals(name) && tempAction.getDuration() > 0) {
+                actions.add(tempAction);
+            }
+
         }
         return actions;
     }

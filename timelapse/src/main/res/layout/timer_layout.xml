@@ -10,17 +10,41 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".TimerActivity">
 
-    <Button
-        android:id="@+id/timerButton"
-        android:layout_width="161dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="back"
+            android:text="Back"
+            android:textSize="30dp" />
+
+        <Button
+            android:id="@+id/timerButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:onClick="toggleTimer"
+            android:text="Start"
+            android:textSize="30dp" />
+    </LinearLayout>
+
+
+    <Switch
+        android:id="@+id/saveActionCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:clickable="true"
-        android:onClick="toggleTimer"
-        android:text="Start"
-        android:textSize="30dp" />
+        android:checked="true"
+        android:text="Save" />
 
     <TextView
         android:id="@+id/counterTextView"
