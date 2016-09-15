@@ -9,6 +9,8 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class ActionChartActivity extends AppCompatActivity {
@@ -19,7 +21,7 @@ public class ActionChartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_action_chart);
         ArrayList<Action> actions = getIntent().getParcelableArrayListExtra("actions");
-
+        Collections.reverse(actions);
         actionName = actions.size() > 0 ? actions.get(0).getName() : "";
 
         List<Entry> entries = new ArrayList<>();
