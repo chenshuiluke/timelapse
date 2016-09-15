@@ -70,7 +70,7 @@ public class Action implements Parcelable {
     }
 
     public String getFullyFormattedDate(DateTime date) {
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy-H:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy H:mm:ss");
         return formatter.print(date);
     }
 
