@@ -47,4 +47,8 @@ public class ActionAdapter extends BaseAdapter {
         actionNameTextView.setText(getItem(position).getName());
         return newView;
     }
+
+    public void clear() {
+        dataSource.clear();
+    }
 }

@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.Switch;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
@@ -30,6 +32,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         GetRecordsAsyncTask task = new GetRecordsAsyncTask();
         task.execute();
+        Switch switcher = (Switch) findViewById(R.id.toggleChartSwitch);
+        switcher.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                PieChart pieChart = (PieChart) findViewById(R.id.pieChart);
+                System.out.print(pieChart.getVisibility());
+                if (isChecked) {
+                    pieChart.setVisibility(View.VISIBLE);
+                    GetPieChartDataAsyncTask task = new GetPieChartDataAsyncTask();
+                    task.execute();
+                } else {
+                    pieChart.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     public void showNewActionActivity(View view) {
@@ -47,14 +63,23 @@ public class MainActivity extends AppCompatActivity {
     private class GetRecordsAsyncTask extends AsyncTask {
         @Override
         protected Object doInBackground(Object[] params) {
-            final ActionDatabaseHelper dbHelper = new ActionDatabaseHelper(getApplicationContext());
             final ListView actionsList = (ListView) findViewById(R.id.actionNamesListView);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    actionsList.setAdapter(new ActionAdapter(getApplicationContext(), new ArrayList<Action>()));
+                }
+            });
+
+            final ActionDatabaseHelper dbHelper = new ActionDatabaseHelper(getApplicationContext());
+
             actions = dbHelper.getAllRecords(getApplicationContext());
 
             for (Action action : actions) {
                 actionNamesSet.add(action);
             }
-
+            System.out.println(actionNamesSet);
             for (Action action : actionNamesSet) {
                 ArrayList<Action> list = dbHelper.getAllRecordsWhereNameEquals(getApplicationContext(), action.getName());
                 Float sum = new Float(0);
@@ -68,6 +93,10 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    ActionAdapter tempAdapter = (ActionAdapter) actionsList.getAdapter();
+                    if (tempAdapter != null) {
+                        tempAdapter.clear();
+                    }
                     actionsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -87,11 +116,18 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
-                    actionsList.setAdapter(new ActionAdapter(getApplicationContext(), new ArrayList<Action>()));
                     actionsList.setAdapter(adapter);
+                    GetPieChartDataAsyncTask task = new GetPieChartDataAsyncTask();
+                    task.execute();
                 }
             });
+            return null;
+        }
+    }
+
+    public class GetPieChartDataAsyncTask extends AsyncTask {
+        @Override
+        protected Object doInBackground(Object[] params) {
 
             final PieChart pieChart = (PieChart) findViewById(R.id.pieChart);
             ArrayList<PieEntry> entries = new ArrayList<>();
@@ -99,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
             int counter = 0;
 
             for (Action action : actionNamesSet) {
+                System.out.println("Adding " + action);
                 entries.add(new PieEntry(actionProportions.get(action.getName()), action.getName()));
                 System.out.println(actionProportions.get(action.getName()));
                 counter++;
@@ -126,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
 
             PieDataSet dataSet = new PieDataSet(entries, "Action Proportions");
             final PieData data = new PieData(dataSet);
+
             data.setValueFormatter(new DefaultValueFormatter(0));
             data.setValueTextSize(20f);
             dataSet.setColors(colors);
@@ -137,12 +175,9 @@ public class MainActivity extends AppCompatActivity {
                     pieChart.setEntryLabelColor(Color.BLACK);
                     pieChart.setUsePercentValues(false);
                     pieChart.setData(data);
+                    pieChart.setDescription("Proportions of action durations.");
                 }
             });
-
-
-
-
             return null;
         }
     }

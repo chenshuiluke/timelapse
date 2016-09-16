@@ -9,7 +9,6 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,6 +34,7 @@ public class ActionChartActivity extends AppCompatActivity {
         LineData data = new LineData(dataSet);
         LineChart chart = (LineChart) findViewById(R.id.chart);
         chart.setData(data);
+        chart.setDescription("Duration of action");
         chart.invalidate();
     }
 }
