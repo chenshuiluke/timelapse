@@ -47,20 +47,20 @@ public class ActionChartActivity extends AppCompatActivity {
         dataSet.setLineWidth(1.75f);
         dataSet.setCircleRadius(5f);
         dataSet.setCircleHoleRadius(2.5f);
-        dataSet.setColor(Color.WHITE);
-        dataSet.setCircleColor(Color.WHITE);
-        dataSet.setHighLightColor(Color.WHITE);
+        dataSet.setColor(Color.BLUE);
+        dataSet.setCircleColor(Color.BLUE);
+        dataSet.setHighLightColor(Color.BLUE);
         dataSet.setDrawValues(false);
 
 
         XAxis xAxis = chart.getXAxis();
         xAxis.setGranularity(1 / actions.size());
         xAxis.setLabelCount(3, true);
-        xAxis.setTextColor(Color.WHITE);
+        xAxis.setTextColor(Color.BLACK);
         xAxis.setTextSize(20);
 
-        chart.getAxisLeft().setTextColor(Color.WHITE);
-        chart.getAxisRight().setTextColor(Color.WHITE);
+        chart.getAxisLeft().setTextColor(Color.BLACK);
+        chart.getAxisRight().setTextColor(Color.BLACK);
 
         chart.getAxisLeft().setTextSize(20);
         chart.getAxisRight().setTextSize(20);
@@ -70,11 +70,7 @@ public class ActionChartActivity extends AppCompatActivity {
             public String getFormattedValue(float value, AxisBase axis) {
                 Log.i("Charting", "Value: " + String.valueOf(value));
                 Action action = actionHashMap.get((int) value);
-                if (action != null) {
-                    return action.getFormattedStartDate();
-                } else {
-                    return "";
-                }
+                return "";
 
             }
 
@@ -87,8 +83,8 @@ public class ActionChartActivity extends AppCompatActivity {
         chart.setData(data);
         chart.setDescription("Duration of action");
         chart.setDescriptionTextSize(15);
-        chart.setDescriptionColor(Color.WHITE);
-        chart.setBackgroundColor(Color.rgb(250, 104, 104));
+        chart.setDescriptionColor(Color.BLACK);
+        chart.setBackgroundColor(Color.WHITE);
 
         chart.invalidate();
     }

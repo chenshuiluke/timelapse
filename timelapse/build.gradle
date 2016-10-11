@@ -3,12 +3,48 @@ android {
     compileSdkVersion 24
     buildToolsVersion '24.0.3'
 
+    def versionPropsFile = file('version.properties')
+    def versionBuild
+
+    /*Setting default value for versionBuild which is the last incremented value stored in the file */
+    if (versionPropsFile.canRead()) {
+        def Properties versionProps = new Properties()
+        versionProps.load(new FileInputStream(versionPropsFile))
+        versionBuild = versionProps['VERSION_BUILD'].toInteger()
+    } else {
+        throw new GradleException("Could not read version.properties!")
+    }
+
+    /*Wrapping inside a method avoids auto incrementing on every gradle task run. Now it runs only when we build apk*/
+    ext.autoIncrementBuildNumber = {
+
+        if (versionPropsFile.canRead()) {
+            def Properties versionProps = new Properties()
+            versionProps.load(new FileInputStream(versionPropsFile))
+            versionBuild = versionProps['VERSION_BUILD'].toInteger() + 1
+            versionProps['VERSION_BUILD'] = versionBuild.toString()
+            versionProps.store(versionPropsFile.newWriter(), null)
+        } else {
+            throw new GradleException("Could not read version.properties!")
+        }
+    }
+
+    task increaseVersion() << {
+        autoIncrementBuildNumber()
+
+    }
+    tasks.whenTaskAdded { task ->
+        if (task.name == 'assembleRelease') {
+            task.finalizedBy 'increaseVersion'
+        }
+    }
+
     defaultConfig {
         applicationId "com.lukechenshui.timelapse"
         minSdkVersion 15
         targetSdkVersion 24
         versionCode 1
-        versionName "1.0"
+        versionName "1.0." + versionBuild
     }
     buildTypes {
         release {
