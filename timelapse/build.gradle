@@ -43,7 +43,7 @@ android {
         applicationId "com.lukechenshui.timelapse"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 1
+        versionCode versionBuild
         versionName "1.0." + versionBuild
     }
     buildTypes {

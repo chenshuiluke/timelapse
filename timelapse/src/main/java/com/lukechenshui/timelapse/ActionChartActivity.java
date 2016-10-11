@@ -81,7 +81,7 @@ public class ActionChartActivity extends AppCompatActivity {
         });
         chart.setExtraOffsets(30, 10, 30, 0);
         chart.setData(data);
-        chart.setDescription("Duration of action");
+        chart.setDescription("Duration of action in seconds");
         chart.setDescriptionTextSize(15);
         chart.setDescriptionColor(Color.BLACK);
         chart.setBackgroundColor(Color.WHITE);
